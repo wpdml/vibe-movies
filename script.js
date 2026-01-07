@@ -5,6 +5,7 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const homePage = document.getElementById('homePage');
 const searchPage = document.getElementById('searchPage');
 const detailPage = document.getElementById('detailPage');
+const favoritesPage = document.getElementById('favoritesPage');
 const navBtns = document.querySelectorAll('.nav-btn');
 const genresContainer = document.getElementById('genresContainer');
 const homeLoading = document.getElementById('homeLoading');
@@ -18,9 +19,52 @@ const backBtn = document.getElementById('backBtn');
 const movieDetail = document.getElementById('movieDetail');
 const detailLoading = document.getElementById('detailLoading');
 const detailError = document.getElementById('detailError');
+const favoritesContainer = document.getElementById('favoritesContainer');
+const favoritesLoading = document.getElementById('favoritesLoading');
+const emptyFavorites = document.getElementById('emptyFavorites');
 
 // 이전 페이지 추적
 let previousPage = 'home';
+
+// localStorage 키
+const FAVORITES_KEY = 'noona_movies_favorites';
+
+// 찜 목록 관리 함수들
+function getFavorites() {
+    const favorites = localStorage.getItem(FAVORITES_KEY);
+    return favorites ? JSON.parse(favorites) : [];
+}
+
+function saveFavorites(favorites) {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+}
+
+function addToFavorites(movie) {
+    const favorites = getFavorites();
+    if (!favorites.find(f => f.id === movie.id)) {
+        favorites.push({
+            id: movie.id,
+            title: movie.title,
+            poster_path: movie.poster_path,
+            release_date: movie.release_date
+        });
+        saveFavorites(favorites);
+        return true;
+    }
+    return false;
+}
+
+function removeFromFavorites(movieId) {
+    const favorites = getFavorites();
+    const filtered = favorites.filter(f => f.id !== movieId);
+    saveFavorites(filtered);
+    return filtered.length !== favorites.length;
+}
+
+function isFavorite(movieId) {
+    const favorites = getFavorites();
+    return favorites.some(f => f.id === movieId);
+}
 
 // 페이지 전환
 function showPage(pageName) {
@@ -30,6 +74,8 @@ function showPage(pageName) {
             previousPage = 'home';
         } else if (searchPage.classList.contains('active')) {
             previousPage = 'search';
+        } else if (favoritesPage.classList.contains('active')) {
+            previousPage = 'favorites';
         }
     }
     
@@ -37,6 +83,7 @@ function showPage(pageName) {
     homePage.classList.remove('active');
     searchPage.classList.remove('active');
     detailPage.classList.remove('active');
+    favoritesPage.classList.remove('active');
     
     // 네비게이션 버튼 업데이트
     navBtns.forEach(b => b.classList.remove('active'));
@@ -48,6 +95,10 @@ function showPage(pageName) {
     } else if (pageName === 'search') {
         searchPage.classList.add('active');
         navBtns[1].classList.add('active');
+    } else if (pageName === 'favorites') {
+        favoritesPage.classList.add('active');
+        navBtns[2].classList.add('active');
+        loadFavoritesPage();
     } else if (pageName === 'detail') {
         detailPage.classList.add('active');
     }
@@ -273,6 +324,10 @@ function displayMovieDetail(movie) {
         ? movie.production_countries.map(c => c.name).join(', ')
         : '정보 없음';
     
+    const favorite = isFavorite(movie.id);
+    const favoriteBtnText = favorite ? '❤️ 찜 해제' : '🤍 찜하기';
+    const favoriteBtnClass = favorite ? 'favorite-btn active' : 'favorite-btn';
+    
     movieDetail.innerHTML = `
         <div class="movie-detail-container">
             <img 
@@ -284,6 +339,10 @@ function displayMovieDetail(movie) {
             <div class="movie-detail-info">
                 <h2 class="movie-detail-title">${movie.title}</h2>
                 ${movie.tagline ? `<p class="movie-detail-tagline">"${movie.tagline}"</p>` : ''}
+                
+                <button class="${favoriteBtnClass}" id="favoriteBtn" data-movie-id="${movie.id}">
+                    ${favoriteBtnText}
+                </button>
                 
                 <div class="movie-detail-meta">
                     <div class="movie-detail-meta-item">
@@ -319,6 +378,63 @@ function displayMovieDetail(movie) {
             </div>
         </div>
     `;
+    
+    // 찜 버튼 이벤트 추가
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFavorite(movie);
+        });
+    }
+}
+
+// 찜 토글 함수
+function toggleFavorite(movie) {
+    const favorite = isFavorite(movie.id);
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    
+    if (favorite) {
+        removeFromFavorites(movie.id);
+        if (favoriteBtn) {
+            favoriteBtn.textContent = '🤍 찜하기';
+            favoriteBtn.classList.remove('active');
+        }
+    } else {
+        addToFavorites(movie);
+        if (favoriteBtn) {
+            favoriteBtn.textContent = '❤️ 찜 해제';
+            favoriteBtn.classList.add('active');
+        }
+    }
+    
+    // 찜 페이지가 활성화되어 있으면 다시 로드
+    if (favoritesPage.classList.contains('active')) {
+        loadFavoritesPage();
+    }
+}
+
+// 찜 페이지 로드
+function loadFavoritesPage() {
+    favoritesLoading.style.display = 'block';
+    emptyFavorites.style.display = 'none';
+    favoritesContainer.innerHTML = '';
+    
+    const favorites = getFavorites();
+    
+    if (favorites.length === 0) {
+        favoritesLoading.style.display = 'none';
+        emptyFavorites.style.display = 'block';
+        return;
+    }
+    
+    // 찜한 영화들을 표시
+    favorites.forEach(favorite => {
+        const movieCard = createMovieCard(favorite, false);
+        favoritesContainer.appendChild(movieCard);
+    });
+    
+    favoritesLoading.style.display = 'none';
 }
 
 // 영화 상세 페이지 표시

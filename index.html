@@ -16,6 +16,7 @@
             <div class="nav-links">
                 <button class="nav-btn active" data-page="home">홈</button>
                 <button class="nav-btn" data-page="search">검색</button>
+                <button class="nav-btn" data-page="favorites">찜</button>
             </div>
         </div>
         <div class="marquee-lights"></div>
@@ -88,6 +89,28 @@
             
             <div class="error" id="detailError" style="display: none;">
                 <p>영화 정보를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 찜 페이지 -->
+    <div id="favoritesPage" class="page">
+        <div class="container">
+            <header>
+                <h2>내가 찜한 영화</h2>
+                <p class="subtitle">좋아하는 영화를 모아보세요</p>
+            </header>
+            
+            <div class="loading" id="favoritesLoading" style="display: none;">
+                <div class="spinner"></div>
+                <p>찜한 영화를 불러오는 중...</p>
+            </div>
+            
+            <div class="movies-grid" id="favoritesContainer"></div>
+            
+            <div class="empty-favorites" id="emptyFavorites" style="display: none;">
+                <p>아직 찜한 영화가 없습니다.</p>
+                <p class="empty-subtitle">영화를 클릭하여 상세 페이지에서 찜하기를 눌러보세요!</p>
             </div>
         </div>
     </div>
