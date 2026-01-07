@@ -73,6 +73,24 @@
             </div>
         </div>
     </div>
+
+    <!-- 영화 상세 페이지 -->
+    <div id="detailPage" class="page">
+        <div class="container">
+            <button class="back-btn" id="backBtn">← 뒤로가기</button>
+            
+            <div class="loading" id="detailLoading">
+                <div class="spinner"></div>
+                <p>영화 정보를 불러오는 중...</p>
+            </div>
+            
+            <div id="movieDetail" style="display: none;"></div>
+            
+            <div class="error" id="detailError" style="display: none;">
+                <p>영화 정보를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</p>
+            </div>
+        </div>
+    </div>
     
     <script src="script.js"></script>
 </body>

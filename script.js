@@ -4,6 +4,7 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 // DOM 요소
 const homePage = document.getElementById('homePage');
 const searchPage = document.getElementById('searchPage');
+const detailPage = document.getElementById('detailPage');
 const navBtns = document.querySelectorAll('.nav-btn');
 const genresContainer = document.getElementById('genresContainer');
 const homeLoading = document.getElementById('homeLoading');
@@ -13,25 +14,55 @@ const searchBtn = document.getElementById('searchBtn');
 const searchResults = document.getElementById('searchResults');
 const searchLoading = document.getElementById('searchLoading');
 const searchError = document.getElementById('searchError');
+const backBtn = document.getElementById('backBtn');
+const movieDetail = document.getElementById('movieDetail');
+const detailLoading = document.getElementById('detailLoading');
+const detailError = document.getElementById('detailError');
+
+// 이전 페이지 추적
+let previousPage = 'home';
 
 // 페이지 전환
+function showPage(pageName) {
+    // 현재 활성 페이지 저장 (상세 페이지로 가는 경우)
+    if (pageName === 'detail') {
+        if (homePage.classList.contains('active')) {
+            previousPage = 'home';
+        } else if (searchPage.classList.contains('active')) {
+            previousPage = 'search';
+        }
+    }
+    
+    // 모든 페이지 숨기기
+    homePage.classList.remove('active');
+    searchPage.classList.remove('active');
+    detailPage.classList.remove('active');
+    
+    // 네비게이션 버튼 업데이트
+    navBtns.forEach(b => b.classList.remove('active'));
+    
+    // 선택한 페이지 표시
+    if (pageName === 'home') {
+        homePage.classList.add('active');
+        navBtns[0].classList.add('active');
+    } else if (pageName === 'search') {
+        searchPage.classList.add('active');
+        navBtns[1].classList.add('active');
+    } else if (pageName === 'detail') {
+        detailPage.classList.add('active');
+    }
+}
+
 navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const page = btn.dataset.page;
-        
-        // 네비게이션 버튼 활성화
-        navBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // 페이지 전환
-        if (page === 'home') {
-            homePage.classList.add('active');
-            searchPage.classList.remove('active');
-        } else {
-            homePage.classList.remove('active');
-            searchPage.classList.add('active');
-        }
+        showPage(page);
     });
+});
+
+// 뒤로가기 버튼
+backBtn.addEventListener('click', () => {
+    showPage(previousPage);
 });
 
 // 장르 목록 가져오기
@@ -181,7 +212,119 @@ function createMovieCard(movie, isCarousel = false) {
         </div>
     `;
     
+    // 클릭 이벤트 추가
+    card.addEventListener('click', () => {
+        showMovieDetail(movie.id);
+    });
+    
     return card;
+}
+
+// 영화 상세 정보 가져오기
+async function fetchMovieDetail(movieId) {
+    try {
+        detailLoading.style.display = 'block';
+        detailError.style.display = 'none';
+        movieDetail.style.display = 'none';
+        
+        const response = await fetch(
+            `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`
+        );
+        
+        if (!response.ok) {
+            throw new Error('영화 상세 정보를 가져올 수 없습니다.');
+        }
+        
+        const data = await response.json();
+        displayMovieDetail(data);
+        
+    } catch (error) {
+        console.error('영화 상세 정보 오류:', error);
+        detailLoading.style.display = 'none';
+        detailError.style.display = 'block';
+    }
+}
+
+// 영화 상세 정보 표시
+function displayMovieDetail(movie) {
+    detailLoading.style.display = 'none';
+    movieDetail.style.display = 'block';
+    
+    const posterPath = movie.poster_path 
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : 'https://via.placeholder.com/500x750?text=No+Image';
+    
+    const releaseDate = movie.release_date 
+        ? new Date(movie.release_date).toLocaleDateString('ko-KR')
+        : '날짜 없음';
+    
+    const runtime = movie.runtime ? `${movie.runtime}분` : '정보 없음';
+    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : '0.0';
+    
+    const genres = movie.genres && movie.genres.length > 0
+        ? movie.genres.map(g => `<span class="movie-detail-genre">${g.name}</span>`).join('')
+        : '<span class="movie-detail-genre">장르 정보 없음</span>';
+    
+    const productionCompanies = movie.production_companies && movie.production_companies.length > 0
+        ? movie.production_companies.map(c => c.name).join(', ')
+        : '정보 없음';
+    
+    const productionCountries = movie.production_countries && movie.production_countries.length > 0
+        ? movie.production_countries.map(c => c.name).join(', ')
+        : '정보 없음';
+    
+    movieDetail.innerHTML = `
+        <div class="movie-detail-container">
+            <img 
+                src="${posterPath}" 
+                alt="${movie.title}" 
+                class="movie-detail-poster"
+                onerror="this.src='https://via.placeholder.com/500x750?text=No+Image'"
+            >
+            <div class="movie-detail-info">
+                <h2 class="movie-detail-title">${movie.title}</h2>
+                ${movie.tagline ? `<p class="movie-detail-tagline">"${movie.tagline}"</p>` : ''}
+                
+                <div class="movie-detail-meta">
+                    <div class="movie-detail-meta-item">
+                        <span class="movie-detail-meta-label">개봉일:</span>
+                        <span>${releaseDate}</span>
+                    </div>
+                    <div class="movie-detail-meta-item">
+                        <span class="movie-detail-meta-label">상영시간:</span>
+                        <span>${runtime}</span>
+                    </div>
+                    <div class="movie-detail-rating">
+                        <span>⭐</span>
+                        <span>${rating}</span>
+                    </div>
+                </div>
+                
+                <div class="movie-detail-genres">
+                    ${genres}
+                </div>
+                
+                ${movie.overview ? `
+                    <div class="movie-detail-overview">
+                        <h3 class="movie-detail-overview-title">줄거리</h3>
+                        <p>${movie.overview}</p>
+                    </div>
+                ` : ''}
+                
+                <div class="movie-detail-production">
+                    <h3 class="movie-detail-production-title">제작 정보</h3>
+                    <p class="movie-detail-production-item"><strong>제작사:</strong> ${productionCompanies}</p>
+                    <p class="movie-detail-production-item"><strong>제작 국가:</strong> ${productionCountries}</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// 영화 상세 페이지 표시
+function showMovieDetail(movieId) {
+    showPage('detail');
+    fetchMovieDetail(movieId);
 }
 
 // 영화 검색
