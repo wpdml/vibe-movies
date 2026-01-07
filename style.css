@@ -1,0 +1,597 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Playfair Display', 'Times New Roman', serif;
+    background: #0a0a0a;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(220, 20, 60, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(220, 20, 60, 0.05) 0%, transparent 50%);
+    min-height: 100vh;
+    padding: 0;
+    color: #f5f5dc;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* 배경 불빛 효과 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(220, 20, 60, 0.15) 0%, transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.15) 0%, transparent 30%),
+        radial-gradient(circle at 50% 50%, rgba(220, 20, 60, 0.1) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+    animation: flicker 3s infinite alternate;
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* 네비게이션 */
+.navbar {
+    background: rgba(10, 10, 10, 0.95);
+    padding: 20px 20px 10px;
+    box-shadow: 0 2px 20px rgba(220, 20, 60, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid rgba(220, 20, 60, 0.3);
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.logo {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: #dc143c;
+    font-weight: 700;
+    text-shadow: 
+        0 0 10px rgba(220, 20, 60, 0.8),
+        0 0 20px rgba(220, 20, 60, 0.6),
+        0 0 30px rgba(220, 20, 60, 0.4);
+    letter-spacing: 3px;
+    animation: neonGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes neonGlow {
+    from {
+        text-shadow: 
+            0 0 10px rgba(220, 20, 60, 0.8),
+            0 0 20px rgba(220, 20, 60, 0.6),
+            0 0 30px rgba(220, 20, 60, 0.4);
+    }
+    to {
+        text-shadow: 
+            0 0 15px rgba(220, 20, 60, 1),
+            0 0 25px rgba(220, 20, 60, 0.8),
+            0 0 35px rgba(220, 20, 60, 0.6),
+            0 0 45px rgba(220, 20, 60, 0.4);
+    }
+}
+
+.marquee-lights {
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #dc143c 20%,
+        #ffd700 40%,
+        #dc143c 60%,
+        #ffd700 80%,
+        transparent
+    );
+    margin-top: 10px;
+    animation: marquee 3s linear infinite;
+    box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
+}
+
+@keyframes marquee {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.nav-links {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    padding: 10px 25px;
+    border: 2px solid rgba(220, 20, 60, 0.5);
+    background: transparent;
+    color: #f5f5dc;
+    font-size: 1rem;
+    font-family: 'Playfair Display', serif;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-btn:hover {
+    background: rgba(220, 20, 60, 0.2);
+    border-color: #dc143c;
+    box-shadow: 0 0 15px rgba(220, 20, 60, 0.5);
+    color: #ffd700;
+}
+
+.nav-btn.active {
+    background: rgba(220, 20, 60, 0.3);
+    border-color: #dc143c;
+    color: #ffd700;
+    box-shadow: 
+        0 0 10px rgba(220, 20, 60, 0.6),
+        inset 0 0 10px rgba(220, 20, 60, 0.2);
+}
+
+/* 페이지 전환 */
+.page {
+    display: none;
+    padding: 20px;
+    min-height: calc(100vh - 100px);
+    position: relative;
+    z-index: 1;
+}
+
+.page.active {
+    display: block;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 40px 20px;
+    background: rgba(20, 20, 20, 0.8);
+    border: 2px solid rgba(220, 20, 60, 0.3);
+    border-radius: 10px;
+    box-shadow: 
+        0 0 20px rgba(220, 20, 60, 0.3),
+        inset 0 0 30px rgba(220, 20, 60, 0.1);
+    position: relative;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #dc143c, #ffd700, #dc143c);
+    border-radius: 10px;
+    z-index: -1;
+    opacity: 0.3;
+    animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    color: #ffd700;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 
+        0 0 10px rgba(255, 215, 0, 0.8),
+        0 0 20px rgba(255, 215, 0, 0.5);
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    color: #d4af37;
+    font-size: 1.2rem;
+    font-style: italic;
+    text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+}
+
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #f5f5dc;
+}
+
+.spinner {
+    border: 4px solid rgba(220, 20, 60, 0.3);
+    border-top: 4px solid #dc143c;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.5);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 장르별 카로셀 */
+.genre-section {
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.genre-title {
+    font-family: 'Cinzel', serif;
+    color: #ffd700;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    padding-left: 15px;
+    text-shadow: 
+        0 0 10px rgba(255, 215, 0, 0.8),
+        0 0 20px rgba(255, 215, 0, 0.5);
+    letter-spacing: 2px;
+    position: relative;
+    display: inline-block;
+}
+
+.genre-title::before {
+    content: '✦';
+    color: #dc143c;
+    margin-right: 10px;
+    text-shadow: 0 0 10px rgba(220, 20, 60, 0.8);
+    animation: twinkle 2s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
+}
+
+.carousel-wrapper {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(220, 20, 60, 0.5) rgba(20, 20, 20, 0.5);
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-track {
+    background: rgba(20, 20, 20, 0.5);
+    border-radius: 10px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(220, 20, 60, 0.5);
+    border-radius: 10px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(220, 20, 60, 0.8);
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(20, 20, 20, 0.9);
+    border: 2px solid rgba(220, 20, 60, 0.6);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.8rem;
+    color: #ffd700;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 0 15px rgba(220, 20, 60, 0.5),
+        inset 0 0 10px rgba(220, 20, 60, 0.2);
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    font-weight: bold;
+}
+
+.carousel-container:hover .carousel-btn {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.carousel-btn:hover {
+    background: rgba(220, 20, 60, 0.3);
+    border-color: #dc143c;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 
+        0 0 25px rgba(220, 20, 60, 0.8),
+        inset 0 0 15px rgba(220, 20, 60, 0.3);
+}
+
+.carousel-btn.prev {
+    left: 10px;
+}
+
+.carousel-btn.next {
+    right: 10px;
+}
+
+.carousel-movies {
+    display: flex;
+    gap: 20px;
+    min-width: fit-content;
+}
+
+.carousel-movie-card {
+    flex: 0 0 180px;
+    background: rgba(20, 20, 20, 0.9);
+    border: 2px solid rgba(220, 20, 60, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 
+        0 5px 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(220, 20, 60, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.carousel-movie-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    border-color: #dc143c;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.7),
+        0 0 20px rgba(220, 20, 60, 0.6);
+}
+
+/* 검색 */
+.search-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-input {
+    flex: 1;
+    padding: 15px 25px;
+    border: 2px solid rgba(220, 20, 60, 0.5);
+    border-radius: 5px;
+    font-size: 1.1rem;
+    background: rgba(20, 20, 20, 0.9);
+    color: #f5f5dc;
+    font-family: 'Playfair Display', serif;
+    box-shadow: 
+        0 0 15px rgba(220, 20, 60, 0.3),
+        inset 0 0 10px rgba(220, 20, 60, 0.1);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+    color: rgba(245, 245, 220, 0.5);
+    font-style: italic;
+}
+
+.search-input:focus {
+    border-color: #dc143c;
+    box-shadow: 
+        0 0 25px rgba(220, 20, 60, 0.6),
+        inset 0 0 15px rgba(220, 20, 60, 0.2);
+    background: rgba(30, 30, 30, 0.95);
+}
+
+.search-btn {
+    padding: 15px 35px;
+    border: 2px solid #dc143c;
+    border-radius: 5px;
+    background: rgba(220, 20, 60, 0.2);
+    color: #ffd700;
+    font-size: 1.1rem;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 
+        0 0 20px rgba(220, 20, 60, 0.5),
+        inset 0 0 10px rgba(220, 20, 60, 0.1);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.search-btn:hover {
+    background: rgba(220, 20, 60, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 0 30px rgba(220, 20, 60, 0.8),
+        inset 0 0 15px rgba(220, 20, 60, 0.2);
+}
+
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+}
+
+.movie-card {
+    background: rgba(20, 20, 20, 0.9);
+    border: 2px solid rgba(220, 20, 60, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 
+        0 5px 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(220, 20, 60, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.movie-card:hover {
+    transform: translateY(-10px);
+    border-color: #dc143c;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.7),
+        0 0 20px rgba(220, 20, 60, 0.6);
+}
+
+.movie-poster,
+.carousel-poster {
+    width: 100%;
+    height: 270px;
+    object-fit: cover;
+    display: block;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a1a1a 100%);
+}
+
+.carousel-poster {
+    height: 250px;
+}
+
+.movie-info {
+    padding: 15px;
+    background: rgba(10, 10, 10, 0.8);
+}
+
+.movie-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f5f5dc;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.movie-release-date {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    color: #d4af37;
+    font-style: italic;
+}
+
+.error {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(20, 20, 20, 0.9);
+    border: 2px solid rgba(220, 20, 60, 0.5);
+    border-radius: 10px;
+    color: #dc143c;
+    font-size: 1.1rem;
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .logo {
+        font-size: 1.5rem;
+    }
+    
+    header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .movie-poster,
+    .carousel-poster {
+        height: 225px;
+    }
+    
+    .carousel-movie-card {
+        flex: 0 0 150px;
+    }
+    
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+    
+    .search-container {
+        flex-direction: column;
+    }
+    
+    .genre-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .movies-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .movie-poster,
+    .carousel-poster {
+        height: 200px;
+    }
+    
+    .carousel-movie-card {
+        flex: 0 0 130px;
+    }
+    
+    .carousel-poster {
+        height: 180px;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+    }
+}
